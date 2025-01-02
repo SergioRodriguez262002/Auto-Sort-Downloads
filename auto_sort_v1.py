@@ -12,7 +12,7 @@ def autosort():
     try:
         entries = os.scandir(mock_download_path)
         for entry in entries:
-            if "." in entry.name :
+            if entry.is_file():
                 name, extention = entry.name.split(".")
 
                 if extention in seen_folders:
@@ -40,7 +40,12 @@ def autosort():
 
         # # OPTIMIZE: for less for loops move during the above
         for entry  in test_moved_folders:
+            test_path = entry[1]+"/"+os.path.basename(entry[0])
+            print("TEST PATH "+test_path)
+            if os.path.exists(test_path):
+                os.remove(test_path)
             shutil.move(entry[0],entry[1])
+
 
 
     finally:
