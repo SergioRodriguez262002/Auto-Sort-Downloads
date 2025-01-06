@@ -4,16 +4,19 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 def autosort():
-    mock_download_path = "/home/hp-laptop1/Desktop/mock_download"
+    mock_download_path = "/home/hp-laptop1/Downloads"
     seen_folders = []
     files_no_folders = []
-
     test_moved_folders = []
     try:
         entries = os.scandir(mock_download_path)
         for entry in entries:
+
             if entry.is_file():
-                name, extention = entry.name.split(".")
+                fields = entry.name.split(".")
+                extention = fields.pop()
+                name = "".join(fields)
+                #name, extention = entry.name.split(".")
 
                 if extention in seen_folders:
                     full_dir = mock_download_path+"/"+extention
@@ -26,8 +29,10 @@ def autosort():
                     seen_folders.append(entry.name)
 
         for entry in files_no_folders:
-            if "." in entry.name:
-                name, extention = entry.name.split(".")
+            if entry.is_file():
+                fields = entry.name.split(".")
+                extention = fields.pop()
+                name = "".join(fields)
                 if extention in seen_folders:
                     full_dir = mock_download_path+"/"+extention
                     test_moved_folders.append((entry.path,full_dir))
@@ -41,7 +46,6 @@ def autosort():
         # # OPTIMIZE: for less for loops move during the above
         for entry  in test_moved_folders:
             test_path = entry[1]+"/"+os.path.basename(entry[0])
-            print("TEST PATH "+test_path)
             if os.path.exists(test_path):
                 os.remove(test_path)
             shutil.move(entry[0],entry[1])
@@ -75,6 +79,6 @@ def watch_directory(directory):
     observer.join()
 
 if __name__ == "__main__":
-    download_directory = "/home/hp-laptop1/Desktop/mock_download"
+    download_directory = "/home/hp-laptop1/Downloads"
     #print(f"Watching directory: {download_directory}")
     watch_directory(download_directory)
